@@ -53,6 +53,7 @@ This system models security threshold logic allowing a user a maximum of **three
 ### System Design
 Validates that an entry strictly matches the criteria: **exactly 1 uppercase letter**, followed by **exactly 2 lowercase letters**, followed by **exactly 1 digit** (e.g., `Abc1`).
 
+<img width="768" height="285" alt="password_dfa" src="https://github.com/user-attachments/assets/fcc9f90f-0d29-433f-ae2e-a9831132692d" />
 
 ### Theoretical Explanation
 * **States ($Q$):**
@@ -70,6 +71,7 @@ Validates that an entry strictly matches the criteria: **exactly 1 uppercase let
 ### System Design
 Matches valid format strings conforming to the grammar structure: `[alphanumeric]^+ @ [alphanumeric]^+ . com`.
 
+<img width="960" height="312" alt="email_dfa" src="https://github.com/user-attachments/assets/03da929b-0608-43a5-bae8-b50d954eb431" />
 
 ### Theoretical Explanation
 * **State Breakdown:**
