@@ -1,59 +1,118 @@
-# Formal Language Theory & Automata Implementation
+# Finite Automata for Real-Time Validation
 
-This repository holds the formal design specifications, programmatic state machine implementations, and visualization configurations for three fundamental deterministic systems.
+**Course:** 21CSC301T Formal Language and Automata, CLA-2, Assessment Task 2  
+**Student:** K R Vaishak (RA2411026050018), B.Tech AIML 'A', III year  
+**Faculty:** Dr. C. Gunasundari, SRM IST Tiruchirappalli  
 
----
-
-## 1. System Formalizations
-
-### System 1: Password Verification DFA
-Verifies a strict structural layout: **exactly 1 uppercase letter**, followed by **exactly 2 lowercase letters**, followed by **exactly 1 digit** (e.g., `Abc1`).
-- **Formal Definition**:
-  - $Q = \{ q_0, q_1, q_2, q_3, q_4, q_{dead} \}$
-  - $\Sigma = \text{All printable characters}$
-  - $q_0 = q_0$
-  - $F = \{ q_4 \}$
-  - $\delta$ Transitions:
-    - $\delta(q_0, [A-Z]) = q_1$
-    - $\delta(q_1, [a-z]) = q_2$
-    - $\delta(q_2, [a-z]) = q_3$
-    - $\delta(q_3, [0-9]) = q_4$
-    - Any off-sequence path drops to $q_{dead}$.
-
-### System 2: Email Format Validator DFA
-Checks strings structured as `[alphanumeric]^+ @ [alphanumeric]^+ . com`.
-- **Formal Definition**:
-  - $Q = \{ q_0, q_1, q_2, q_3, q_4, q_5, q_6, q_7, q_{dead} \}$
-  - $q_0 = q_0$
-  - $F = \{ q_7 \}$
-  - $\delta$ Transitions:
-    - $\delta(q_0, [a-zA-Z0-9]) = q_1$
-    - $\delta(q_1, [a-zA-Z0-9]) = q_1$; $\delta(q_1, @) = q_2$
-    - $\delta(q_2, [a-zA-Z0-9]) = q_3$
-    - $\delta(q_3, [a-zA-Z0-9]) = q_3$; $\delta(q_3, .) = q_4$
-    - $\delta(q_4, 'c') = q_5$; $\delta(q_5, 'o') = q_6$; $\delta(q_6, 'm') = q_7$
-    - Out-of-alphabet or invalid transitions dump to $q_{dead}$.
-
-### System 3: ATM PIN Verification State Machine
-Models security locking behavior with a maximum of three attempts.
-- **Formal Definition**:
-  - $Q = \{ q_{start}, q_{att2}, q_{att3}, q_{unlocked}, q_{blocked} \}$
-  - $\Sigma = \{ \text{'correct'}, \text{'incorrect'} \}$
-  - $q_0 = q_{start}$
-  - $F = \{ q_{unlocked} \}$
-  - $\delta$ Transitions:
-    - $\delta(q_{start}, \text{'correct'}) = q_{unlocked}$; $\delta(q_{start}, \text{'incorrect'}) = q_{att2}$
-    - $\delta(q_{att2}, \text{'correct'}) = q_{unlocked}$; $\delta(q_{att2}, \text{'incorrect'}) = q_{att3}$
-    - $\delta(q_{att3}, \text{'correct'}) = q_{unlocked}$; $\delta(q_{att3}, \text{'incorrect'}) = q_{blocked}$
+This repository contains the design, mathematical formalisms, and programmatic execution models for three deterministic finite automata (DFA) representing daily input-validation tasks.
 
 ---
 
-## 2. Comparative Analysis Table
+## 1. Application Automaton & Live States Summary
 
-| Criteria / Property | Password DFA (System 1) | Email DFA (System 2) | ATM Security Machine (System 3) |
-| :--- | :--- | :--- | :--- |
-| **State Complexity** | 6 states (including $q_{dead}$) | 9 states (including $q_{dead}$) | 5 logical operational states |
-| **Determinism (DFA)** | Yes (Deterministic) | Yes (Deterministic) | Yes (Deterministic) |
-| **Transition Dynamics** | Linear structural progression | Self-loops & terminal word-matching | Multi-tiered linear progression with paths to terminal configurations |
-| **Memory / Tracking** | Strictly tracks current character index | Arbitrary length matching with character lookahead | Sequence length state tracking (up to 3 input steps) |
-| **Terminal Outlets** | Invariant terminal reject ($q_{dead}$) | Invariant terminal reject ($q_{dead}$) | Absorbing permanent states (`Blocked` / `Unlocked`) |
+| # | Application | Automaton Type | Input Alphabet ($\Sigma$) | Final/Accepting States | Dead/Trap States | Total States |
+|:-:| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | **Password Policy** | DFA | ASCII Characters | $\{q_4\}$ | $q_{dead}$ | 6 |
+| 2 | **E-mail Format** | DFA | Alphanumeric, `@`, `.`, `c`, `o`, `m` | $\{q_7\}$ | $q_{dead}$ | 9 |
+| 3 | **ATM PIN Verification** | State Machine | $\{	ext{correct}, 	ext{incorrect}\}$ | $\{q_{unlocked}\}$ | None (absorbing $q_{blocked}$) | 5 |
+
+---
+
+## 2. Run It
+
+To execute the verification engines locally, clone this repository and run the state machine simulation script:
+
+```bash
+# Run the state machines and execute integrated validation test suites
+python task2_automata.py
+```
+
+---
+
+## 3. ATM PIN Verification
+
+### System Design
+This system models security threshold logic allowing a user a maximum of **three verification attempts** before permanently locking the system.
+
+```
+           [Incorrect PIN]           [Incorrect PIN]           [Incorrect PIN]
+(Start/Att1) ------------> (Attempt 2) ------------> (Attempt 3) ------------> [Blocked]
+     |                           |                           |
+     | [Correct PIN]             | [Correct PIN]             | [Correct PIN]
+     v                           v                           v
+ [Unlocked] <====================+===========================
+```
+
+### Theoretical Explanation
+* **States ($Q$):**
+  * $q_{start}$ / $q_{att1}$: Waiting for the initial PIN input attempt.
+  * $q_{att2}$: Second attempt state after 1 incorrect input.
+  * $q_{att3}$: Third and final attempt state after 2 incorrect inputs.
+  * $q_{unlocked}$: Accepting state representing validated access. It is an absorbing terminal state.
+  * $q_{blocked}$: Terminal state indicating that the security threshold has been exceeded and the account is frozen.
+* **Transition Security Logic:** This is not a simple regular expression evaluator; it acts as a contextual threshold counter tracking consecutive failures.
+
+---
+
+## 4. Password Policy Verification
+
+### System Design
+Validates that an entry strictly matches the criteria: **exactly 1 uppercase letter**, followed by **exactly 2 lowercase letters**, followed by **exactly 1 digit** (e.g., `Abc1`).
+
+```
+     [A-Z]       [a-z]       [a-z]       [0-9]
+(q0) -----> (q1) -----> (q2) -----> (q3) -----> ((q4))
+  \           \           \           \           /
+   \__________?\__________?\__________?\_________/ [Any extra char]
+                         v
+                      [q_dead] <--- (Loop back on any char)
+```
+
+### Theoretical Explanation
+* **States ($Q$):**
+  * $q_0$: Initial state, waiting for a capital letter.
+  * $q_1$: Successfully parsed 1 uppercase letter.
+  * $q_2$: Successfully parsed 1 uppercase and 1 lowercase letter.
+  * $q_3$: Successfully parsed 1 uppercase and 2 lowercase letters.
+  * $q_4$: Target accepting state (exactly 1 uppercase, 2 lowercase, 1 digit).
+  * $q_{dead}$: Sinks any invalid characters or length violations.
+
+---
+
+## 5. E-mail Format Validator
+
+### System Design
+Matches valid format strings conforming to the grammar structure: `[alphanumeric]^+ @ [alphanumeric]^+ . com`.
+
+```
+      [alnum]       @        [alnum]       .         'c'         'o'         'm'
+(q0) ---------> (q1) -> (q2) ---------> (q3) -> (q4) ----> (q5) ----> (q6) ----> ((q7))
+                 ^                       ^
+              [alnum]                 [alnum]
+```
+
+### Theoretical Explanation
+* **State Breakdown:**
+  * $q_0 ightarrow q_1$: Matches the initial non-empty username segment.
+  * $q_1 ightarrow q_2$: Transitioned by the mandatory `@` symbol.
+  * $q_2 ightarrow q_3$: Matches the domain prefix segment.
+  * $q_3 ightarrow q_4$: Instigated by the domain dot (`.`).
+  * $q_4 ightarrow q_5 ightarrow q_6 ightarrow q_7$: Sequentially verifies the fixed top-level extension string `'c'-'o'-'m'` to reach the accepting state.
+
+---
+
+## 6. Syntax vs. Semantics in Input Validation
+
+In language theory and software compilers, validators evaluate inputs at different layers:
+* **Syntax (Structural Grammar):** Focuses solely on whether the input follows the structural rules of the language. For example, verifying that an email matches the structure `user@domain.com` or that a password consists of `[A-Z][a-z][a-z][0-9]`. This layout-level evaluation is perfectly processed by Regular Expressions and Deterministic Finite Automata (DFA).
+* **Semantics (Meaning & Contextual Validity):** Evaluates if a syntactically correct input makes sense in context. For example, `nonexistent_user@invalid_domain.com` is **syntactically valid** (it passes the DFA check), but **semantically invalid** if that domain does not exist or the mailbox is inactive. Evaluating semantics typically requires external context lookup, databases, or runtime checks that go beyond the capabilities of simple regular language machines.
+
+---
+
+## 7. Layout & State Transitions Comparison
+
+Our three models represent different architectural state styles:
+
+* **Linear Path Layout (System 1 & 2):** Characters must arrive in a strict chronological sequence. Deviations from the transition pattern permanently dump the process into an absorbing error state ($q_{dead}$).
+* **Self-Loop Dynamic Layout (System 2):** Integrates loops on states $q_1$ and $q_3$ to process variable-length strings of alphanumeric inputs.
+* **Sequential Counter State Layout (System 3):** Simulates contextual history tracking. Rather than reading characters, it evaluates transactional events (`correct`/`incorrect`) to scale through successive threat levels before permanently landing in a terminal lock state.
