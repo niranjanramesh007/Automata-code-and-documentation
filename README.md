@@ -34,6 +34,7 @@ python task2_automata.py
 ### System Design
 This system models security threshold logic allowing a user a maximum of **three verification attempts** before permanently locking the system.
 
+<img width="768" height="302" alt="atm_dfa" src="https://github.com/user-attachments/assets/ab2d32b0-b2a2-4530-adb8-5046fbf7a2a2" />
 
 
 ### Theoretical Explanation
