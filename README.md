@@ -1,7 +1,7 @@
 # Finite Automata for Real-Time Validation
 
 **Course:** 21CSC301T Formal Language and Automata, CLA-2, Assessment Task 2  
-**Student:** K R Vaishak (RA2411026050018), B.Tech AIML 'A', III year  
+**Student:** Niranjan R (RA2411026050070), B.Tech AIML 'A', III year  
 **Faculty:** Dr. C. Gunasundari, SRM IST Tiruchirappalli  
 
 This repository contains the design, mathematical formalisms, and programmatic execution models for three deterministic finite automata (DFA) representing daily input-validation tasks.
@@ -34,14 +34,7 @@ python task2_automata.py
 ### System Design
 This system models security threshold logic allowing a user a maximum of **three verification attempts** before permanently locking the system.
 
-```
-           [Incorrect PIN]           [Incorrect PIN]           [Incorrect PIN]
-(Start/Att1) ------------> (Attempt 2) ------------> (Attempt 3) ------------> [Blocked]
-     |                           |                           |
-     | [Correct PIN]             | [Correct PIN]             | [Correct PIN]
-     v                           v                           v
- [Unlocked] <====================+===========================
-```
+
 
 ### Theoretical Explanation
 * **States ($Q$):**
@@ -59,14 +52,6 @@ This system models security threshold logic allowing a user a maximum of **three
 ### System Design
 Validates that an entry strictly matches the criteria: **exactly 1 uppercase letter**, followed by **exactly 2 lowercase letters**, followed by **exactly 1 digit** (e.g., `Abc1`).
 
-```
-     [A-Z]       [a-z]       [a-z]       [0-9]
-(q0) -----> (q1) -----> (q2) -----> (q3) -----> ((q4))
-  \           \           \           \           /
-   \__________?\__________?\__________?\_________/ [Any extra char]
-                         v
-                      [q_dead] <--- (Loop back on any char)
-```
 
 ### Theoretical Explanation
 * **States ($Q$):**
@@ -84,20 +69,21 @@ Validates that an entry strictly matches the criteria: **exactly 1 uppercase let
 ### System Design
 Matches valid format strings conforming to the grammar structure: `[alphanumeric]^+ @ [alphanumeric]^+ . com`.
 
-```
-      [alnum]       @        [alnum]       .         'c'         'o'         'm'
-(q0) ---------> (q1) -> (q2) ---------> (q3) -> (q4) ----> (q5) ----> (q6) ----> ((q7))
-                 ^                       ^
-              [alnum]                 [alnum]
-```
 
 ### Theoretical Explanation
 * **State Breakdown:**
-  * $q_0 ightarrow q_1$: Matches the initial non-empty username segment.
-  * $q_1 ightarrow q_2$: Transitioned by the mandatory `@` symbol.
-  * $q_2 ightarrow q_3$: Matches the domain prefix segment.
-  * $q_3 ightarrow q_4$: Instigated by the domain dot (`.`).
-  * $q_4 ightarrow q_5 ightarrow q_6 ightarrow q_7$: Sequentially verifies the fixed top-level extension string `'c'-'o'-'m'` to reach the accepting state.
+  * $q_0 
+ightarrow q_1$: Matches the initial non-empty username segment.
+  * $q_1 
+ightarrow q_2$: Transitioned by the mandatory `@` symbol.
+  * $q_2 
+ightarrow q_3$: Matches the domain prefix segment.
+  * $q_3 
+ightarrow q_4$: Instigated by the domain dot (`.`).
+  * $q_4 
+ightarrow q_5 
+ightarrow q_6 
+ightarrow q_7$: Sequentially verifies the fixed top-level extension string `'c'-'o'-'m'` to reach the accepting state.
 
 ---
 
